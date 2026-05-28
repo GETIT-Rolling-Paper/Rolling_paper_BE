@@ -1,19 +1,19 @@
 const messageService = require('../service/messageService');
 
-const getMessages = async (req, res) => {
+const getMessages = async (req, res, next) => {
     try {
-
         const messages = await messageService.getAllMessages();
-
         return res.status(200).json(messages);
     } catch (error) {
-        console.error("컨트롤러 에러:", error);
-        return res.status(500).json({ message: "서버 오류가 발생했습니다." });
-const saveMessage = async (req, res,彻) => {
-    try {
-        const { content, color, password } = req.body;
+        next(error);
+    }
+};
 
-        const newMessage = await messageService.registerMessage({ content, color, password });
+const saveMessage = async (req, res, next) => {
+    try {
+        const { content, nickname, color, password } = req.body;
+
+        const newMessage = await messageService.registerMessage({ content, nickname, color, password });
 
         return res.status(201).json({
             success: true,
@@ -21,11 +21,28 @@ const saveMessage = async (req, res,彻) => {
             data: newMessage
         });
     } catch (error) {
-        next(error); 
+        next(error);
+    }
+};
+
+const removeMessage = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { password } = req.body;
+
+        await messageService.deleteMessage(id, password);
+
+        return res.status(200).json({
+            success: true,
+            message: "메시지가 삭제되었습니다."
+        });
+    } catch (error) {
+        next(error);
     }
 };
 
 module.exports = {
-    getMessages
-    saveMessage
+    getMessages,
+    saveMessage,
+    removeMessage
 };
