@@ -24,6 +24,28 @@ const registerMessage = async (messageData) => {
     };
 };
 
+const modifyMessage = async (id, updateData) => {
+    const { content, color, password } = updateData;
+
+    const row = await messageRepository.findPasswordById(id);
+
+    if (!row) {
+        const error = new Error('존재하지 않는 메시지입니다.');
+        error.status = 404;
+        throw error;
+    }
+
+    if (row.password !== password) {
+        const error = new Error('비밀번호가 틀렸습니다.');
+        error.status = 401;
+        throw error;
+    }
+
+    await messageRepository.updateMessageById(id, content, color);
+
+    return { id, content, color };
+};
+
 const deleteMessage = async (id, password) => {
     const row = await messageRepository.findPasswordById(id);
 
@@ -45,5 +67,6 @@ const deleteMessage = async (id, password) => {
 module.exports = {
     getAllMessages,
     registerMessage,
+    modifyMessage, 
     deleteMessage
 };
