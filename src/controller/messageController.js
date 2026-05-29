@@ -1,4 +1,4 @@
-const messageService = require('../service/messageService');
+const messageService = require('../service/service'); // 기존 경로 유지
 
 const getMessages = async (req, res, next) => {
     try {
@@ -25,6 +25,23 @@ const saveMessage = async (req, res, next) => {
     }
 };
 
+const updateMessage = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { content, color, password } = req.body;
+
+        const updatedMessage = await messageService.modifyMessage(id, { content, color, password });
+
+        return res.status(200).json({
+            success: true,
+            message: "메시지가 성공적으로 수정되었습니다.",
+            data: updatedMessage
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 const removeMessage = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -44,5 +61,6 @@ const removeMessage = async (req, res, next) => {
 module.exports = {
     getMessages,
     saveMessage,
+    updateMessage, 
     removeMessage
 };
